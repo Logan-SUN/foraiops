@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
 import os,re
 import json
+import argparse
 from rouge import Rouge
 from modelscope import AutoModelForCausalLM, AutoTokenizer
 from modelscope import GenerationConfig
 
-data_path="/workspace/myqwen/swift/examples/pytorch/llm/my_data/test/testv02.jsonl"
-ckpt_dir = 'output/qwen-14b-chat/v4-20240410-101031/checkpoint-211'
-
 
 from swift.llm import (
-   get_model_tokenizer, get_template, inference, ModelType, get_default_template_type
+get_model_tokenizer, get_template, inference, ModelType, get_default_template_type
 )
 from swift.tuners import Swift
 model_type = ModelType.yi_34b_chat
 template_type = get_default_template_type(model_type)
-
-model, tokenizer = get_model_tokenizer(model_type, model_kwargs={'device_map': 'auto'})
-model = Swift.from_pretrained(model, ckpt_dir, inference_mode=True)
-template = get_template(template_type, tokenizer)
-
 
 def my_tokenizer(instr):
      outstr = re.sub(r'([\u4e00-\u9fff])([\u4e00-\u9fff])', r'\1 \2 ', instr)
@@ -64,3 +57,25 @@ def file_rouge(data_path):
 
 score=file_rouge(data_path)
 print (score)
+
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="parameters")
+    parser.add_argument('-m', '--model', nargs='*',help="model path")
+    parser.add_argument('-f', '--file', nargs='*',help="test file path")
+    args = parser.parse_args()
+    return args
+
+if __name__ == "__main__":
+
+    args = parse_args()
+    ckpt_dir=args.model
+    model, tokenizer = get_model_tokenizer(model_type, model_kwargs={'device_map': 'auto'})
+    model = Swift.from_pretrained(model, ckpt_dir, inference_mode=True)
+    template = get_template(template_type, tokenizer)
+
+    data_path=args.file
+    score=file_rouge(data_path)
+    print (score)
+    print ("done!")
