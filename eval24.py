@@ -55,10 +55,6 @@ def file_rouge(data_path):
     res=rouger.get_scores(hyps,refs,avg=True)
     return res
 
-score=file_rouge(data_path)
-print (score)
-
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="parameters")
