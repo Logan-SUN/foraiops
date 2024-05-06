@@ -23,14 +23,14 @@ def my_tokenizer(instr):
      return outstr
 
 
-def score_precision(hyp,ref):
-    a=json.loads(hyp)['scores']
-    b=json.loads(ref)['scores']
-    return a==b
+# def score_precision(hyp,ref):
+#     a=json.loads(hyp)['scores']
+#     b=json.loads(ref)['scores']
+#     return a==b
 
 def file_rouge(data_path):
     rouger=Rouge()
-    couter=0
+    # couter=0
     dataset,refs,hyps=[],[],[]
     with open(data_path,'r',encoding='utf-8')as f:
         for line in f:
@@ -49,22 +49,22 @@ def file_rouge(data_path):
         hyp_n=my_tokenizer(hyp)
         hyps.append(hyp_n)
         print("{}/{}【完成度】".format(cnt+1, len(dataset)))
-        couter+=int(score_precision(hyp,ref))
+        # couter+=int(score_precision(hyp,ref))
         print()
-    print ("!!!score_precision: {}".format(couter/len(dataset)))
+    # print ("!!!score_precision: {}".format(couter/len(dataset)))
     res=rouger.get_scores(hyps,refs,avg=True)
     return res
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="parameters")
-    parser.add_argument('-m', '--model', nargs='*',help="model path")
-    parser.add_argument('-f', '--file', nargs='*',help="test file path")
+    parser.add_argument('-m', '--model',help="model path")
+    parser.add_argument('-f', '--file',help="test file path")
     args = parser.parse_args()
     return args
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     args = parse_args()
     ckpt_dir=args.model
     model, tokenizer = get_model_tokenizer(model_type, model_kwargs={'device_map': 'auto'})
